@@ -6,3 +6,8 @@ python
 random
 json
 uuid
+python-dotenv
+opeanai
+asyncio
+langchain
+streamlit
