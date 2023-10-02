@@ -131,16 +131,18 @@ def Answer_from_documents(user_query, learned_data):
 # CSV dosyasını yükle
 csv_file = st.file_uploader("Load Your CSV 👈", type="csv")
 
-# OpenAI API anahtarını ayarla
-api_key_input = st.input("Write your OpenAI API")
-os.environ["OPENAI_API_KEY"] = api_key_input
-openai.api_key = os.environ['OPENAI_API_KEY']
 
 
 # Dosya yüklendiyse
 if csv_file is not None:
     # Pandas dataframe'e çevir
     df = pd.read_csv(csv_file, sep=";")
+
+    # OpenAI API anahtarını ayarla
+    api_key_input = st.input("Write your OpenAI API")
+    os.environ["OPENAI_API_KEY"] = api_key_input
+    openai.api_key = os.environ['OPENAI_API_KEY']
+
 
     # Soruyu al
     user_query = st.text_input("Ask the PDL 🤖")
