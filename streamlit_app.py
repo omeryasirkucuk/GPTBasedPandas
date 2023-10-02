@@ -24,10 +24,6 @@ st.markdown("<h1 style='text-align: center; color: grey;'>Ask Your PDL Data 🐼
 
 
 
-# OpenAI API anahtarını ayarla
-os.environ["OPENAI_API_KEY"] = "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"
-openai.api_key = os.environ['OPENAI_API_KEY']
-
 
 def manipulate_data(data):
     def duzelt(text):
@@ -140,6 +136,13 @@ csv_file = st.file_uploader("Load Your CSV 👈", type="csv")
 
 # Dosya yüklendiyse
 if csv_file is not None:
+
+     # OpenAI API anahtarını ayarla
+    api_key_input = st.text_input("Write your OpenAI API")
+    os.environ["OPENAI_API_KEY"] = api_key_input
+    openai.api_key = os.environ['OPENAI_API_KEY']
+
+    
     # Pandas dataframe'e çevir
     df = pd.read_csv(csv_file, sep=";")
 
