@@ -9,6 +9,7 @@ import numpy as np
 import random
 
 
+
 # initialize emoji as a Session State variable
 if "emoji" not in st.session_state:
     st.session_state.emoji = "👈"
@@ -23,10 +24,12 @@ st.markdown("<h1 style='text-align: center; color: grey;'>Ask Your PDL Data 🐼
 
 
 
+# OpenAI API anahtarını ayarla
+os.environ["OPENAI_API_KEY"] = "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"
+openai.api_key = os.environ['OPENAI_API_KEY']
 
 
 def manipulate_data(data):
-    
     def duzelt(text):
         # Türkçe karakterleri düzelt
         text = text.replace('I', 'i').replace('İ', 'i').title()
@@ -70,9 +73,6 @@ def manipulate_data(data):
     return df2
 
 def learn_dataframe(df):
-    # OpenAI API anahtarını ayarla
-    os.environ["OPENAI_API_KEY"] = "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"
-    openai.api_key = os.environ['OPENAI_API_KEY']
     content_chunks = []
 
     for index, row in df.iterrows():
@@ -100,63 +100,59 @@ def learn_dataframe(df):
 
 
 
-def Answer_from_documents(user_query, learned_data):
+def Answer_from_documents(user_query):
     user_query_vector = get_embedding(user_query, engine='text-embedding-ada-002')
 
-    for item in learned_data:
-        item['embeddings'] = [np.array(embedding).reshape(1, -1) for embedding in item['embedding']]
+    with open('my_knowledgebase.json', 'r', encoding="utf-8") as jsonfile:
+        data = json.load(jsonfile)
+        for item in data:
+            # Assuming item['embedding'] is a list, convert each item to a numpy array
+            item['embeddings'] = [np.array(embedding).reshape(1, -1) for embedding in item['embedding']]
 
-    for item in learned_data:
-        item_embedding = np.concatenate(item['embeddings'], axis=1)
-        item['similarities'] = cosine_similarity(item['embedding'], user_query_vector)
-    sorted_data = sorted(learned_data, key=lambda x: x['similarities'], reverse=True)
+        for item in data:
+            # Concatenate all embeddings for the item
+            item_embedding = np.concatenate(item['embeddings'], axis=1)
+            item['similarities'] = cosine_similarity(item['embedding'], user_query_vector)
+        sorted_data = sorted(data, key=lambda x: x['similarities'], reverse=True)
 
-    context = ''
-    for item in sorted_data[:2]:
-        context += item['text']
 
-    myMessages = [
-        {"role": "system", "content": "You're a helpful Assistant."},
-        {"role": "user", "content": "The following is a Context:\n{}\n\n Answer the following user query according to the above given context.\n\nquery: {}".format(context, user_query)}
-    ]
 
-    response = openai.ChatCompletion.create(
-        model='gpt-3.5-turbo',
-        messages=myMessages,
-        max_tokens=200,
-    )
+        context = ''
+        for item in sorted_data[:2]:
+            context += item['text']
+
+        myMessages = [
+            {"role": "system", "content": "You're a helpful Assistant."},
+            {"role": "user", "content": "The following is a Context:\n{}\n\n Answer the following user query according to the above given context.\n\nquery: {}".format(context, user_query)}
+        ]
+
+        response = openai.ChatCompletion.create(
+            model='gpt-3.5-turbo',
+            messages=myMessages,
+            max_tokens=200,
+        )
 
     return response['choices'][0]['message']['content']
 
+
 # CSV dosyasını yükle
 csv_file = st.file_uploader("Load Your CSV 👈", type="csv")
-
-
 
 # Dosya yüklendiyse
 if csv_file is not None:
     # Pandas dataframe'e çevir
     df = pd.read_csv(csv_file, sep=";")
 
-    # OpenAI API anahtarını ayarla
-    api_key_input = st.text_input("Write your OpenAI API")
-    os.environ["OPENAI_API_KEY"] = api_key_input
-    openai.api_key = os.environ['OPENAI_API_KEY']
 
-
-    # Soruyu al
-    user_query = st.text_input("Ask the PDL 🤖")
 
     # Veriyi mani"püle et
     manipulated_data = manipulate_data(df)
 
     # Öğrenilen veriyi kontrol et
-    json_file_path = 'my_knowledgebase.json'
-    try:
-        with open(json_file_path, 'r', encoding='utf-8') as f:
-            learned_data = json.load(f)
-    except FileNotFoundError:
-        learned_data = []
+    learn_dataframe(manipulated_data)
+
+    # Soruyu al
+    user_query = st.text_input("Ask the PDL 🤖")
 
     # Manipüle edilen veriyi göster
     st.write("Manipulated Data 🛠️")
@@ -164,6 +160,6 @@ if csv_file is not None:
 
     # Soruya cevap al
     if st.button("Submit"):
-        answer = Answer_from_documents(user_query, learned_data)
+        answer = Answer_from_documents(user_query)
         st.write("Answer:", answer)
 
