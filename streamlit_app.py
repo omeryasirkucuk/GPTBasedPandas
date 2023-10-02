@@ -24,11 +24,12 @@ st.markdown("<h1 style='text-align: center; color: grey;'>Ask Your PDL Data 🐼
 
 
 # OpenAI API anahtarını ayarla
-os.environ["OPENAI_API_KEY"] = api_key_input
+
 openai.api_key = os.environ['OPENAI_API_KEY']
 
 
 def manipulate_data(data):
+    os.environ["OPENAI_API_KEY"] = api_key_input
     def duzelt(text):
         # Türkçe karakterleri düzelt
         text = text.replace('I', 'i').replace('İ', 'i').title()
