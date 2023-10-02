@@ -8,8 +8,6 @@ import json
 import numpy as np
 import random
 
-def random_emoji():
-    st.session_state.emoji = random.choice(emojis)
 
 # initialize emoji as a Session State variable
 if "emoji" not in st.session_state:
@@ -26,7 +24,7 @@ st.markdown("<h1 style='text-align: center; color: grey;'>Ask Your PDL Data 🐼
 
 
 # OpenAI API anahtarını ayarla
-os.environ["OPENAI_API_KEY"] = "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"
+os.environ["OPENAI_API_KEY"] = api_key_input
 openai.api_key = os.environ['OPENAI_API_KEY']
 
 
