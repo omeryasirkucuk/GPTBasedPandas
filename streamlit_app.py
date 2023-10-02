@@ -139,7 +139,7 @@ if csv_file is not None:
     df = pd.read_csv(csv_file, sep=";")
 
     # OpenAI API anahtarını ayarla
-    api_key_input = st.input("Write your OpenAI API")
+    api_key_input = st.text_input("Write your OpenAI API")
     os.environ["OPENAI_API_KEY"] = api_key_input
     openai.api_key = os.environ['OPENAI_API_KEY']
 
