@@ -23,13 +23,10 @@ st.markdown("<h1 style='text-align: center; color: grey;'>Ask Your PDL Data 🐼
 
 
 
-# OpenAI API anahtarını ayarla
-
-openai.api_key = os.environ['OPENAI_API_KEY']
 
 
 def manipulate_data(data):
-    os.environ["OPENAI_API_KEY"] = api_key_input
+    
     def duzelt(text):
         # Türkçe karakterleri düzelt
         text = text.replace('I', 'i').replace('İ', 'i').title()
@@ -133,6 +130,12 @@ def Answer_from_documents(user_query, learned_data):
 
 # CSV dosyasını yükle
 csv_file = st.file_uploader("Load Your CSV 👈", type="csv")
+
+# OpenAI API anahtarını ayarla
+api_key_input = st.input("Write your OpenAI API")
+os.environ["OPENAI_API_KEY"] = api_key_input
+openai.api_key = os.environ['OPENAI_API_KEY']
+
 
 # Dosya yüklendiyse
 if csv_file is not None:
