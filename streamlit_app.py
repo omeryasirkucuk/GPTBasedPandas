@@ -2,7 +2,6 @@ import streamlit as st
 import pandas as pd
 import openai
 import os
-from data_manipulation import uploaded_and_manipulated_data, manipulate_data
 from openai.embeddings_utils import get_embedding,cosine_similarity
 import uuid
 import json
