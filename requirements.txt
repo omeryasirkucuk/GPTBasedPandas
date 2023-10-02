@@ -14,3 +14,4 @@ python-lsp-server==1.2.4
 python-magic==0.4.27
 python-pptx==0.6.21
 streamlit==1.14.1
+matplotlib==3.8.0
